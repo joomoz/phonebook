@@ -32,9 +32,9 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
-  const note = persons.find(note => note.id === id)
-  if ( note ) {
-    response.json(note)
+  const person = persons.find(note => note.id === id)
+  if ( person ) {
+    response.json(person)
   } else {
     response.status(404).end()
   }
@@ -52,15 +52,15 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({error: 'content missing'})
   }
 
-  const note = {
+  const person = {
     content: body.content,
     date: new Date(),
     id: generateId()
   }
 
-  persons = persons.concat(note)
+  persons = persons.concat(person)
 
-  response.json(note)
+  response.json(person)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
