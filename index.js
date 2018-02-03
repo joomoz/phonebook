@@ -49,20 +49,22 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 const generateId = () => {
-  const maxId = persons.length > 0 ? persons.map(n => n.id).sort().reverse()[0] : 1
-  return maxId + 1
+  // const maxId = persons.length > 0 ? persons.map(n => n.id).sort().reverse()[0] : 1
+  // return maxId + 1
+  const newID = Math.floor(Math.random()*100000)
+  return newID
 }
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (body.content === undefined) {
-    return response.status(400).json({error: 'content missing'})
+  if (body.name === undefined) {
+    return response.status(400).json({error: 'name missing'})
   }
 
   const person = {
-    content: body.content,
-    date: new Date(),
+    name: body.name,
+    number: body.number,
     id: generateId()
   }
 
@@ -73,8 +75,7 @@ app.post('/api/persons', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
-  persons = persons.filter(note => note.id !== id)
-
+  persons = persons.filter(person => person.id !== id)
   response.status(204).end()
 })
 
