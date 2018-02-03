@@ -40,7 +40,7 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
-  const person = persons.find(note => note.id === id)
+  const person = persons.find(person => person.id === id)
   if ( person ) {
     response.json(person)
   } else {
@@ -49,8 +49,6 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 const generateId = () => {
-  // const maxId = persons.length > 0 ? persons.map(n => n.id).sort().reverse()[0] : 1
-  // return maxId + 1
   const newID = Math.floor(Math.random()*100000)
   return newID
 }
@@ -58,14 +56,25 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (body.name === undefined) {
-    return response.status(400).json({error: 'name missing'})
+  if (body.name === undefined || body.number === undefined) {
+    return response.status(400).json({error: 'Name or number missing.'})
+  }
+
+  //Name already in persons
+  if (persons.find(person => person.name === body.name)) {
+    return response.status(400).json({error: 'Name already has number.'})
+  }
+
+  const id = generateId()
+  //Id already in persons
+  if (persons.find(person => person.id === body.id)) {
+    return response.status(400).json({error: 'Id already used.'})
   }
 
   const person = {
     name: body.name,
     number: body.number,
-    id: generateId()
+    id: id
   }
 
   persons = persons.concat(person)
