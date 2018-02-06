@@ -57,13 +57,21 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-  if ( person ) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  // const id = Number(request.params.id)
+
+  Person
+    .findById(request.params.id)
+    .then(person => {
+      if(person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(404).end()
+    })
 })
 
 const generateId = () => {
@@ -91,33 +99,17 @@ app.post('/api/persons', (request, response) => {
     .catch(error => {
       console.log(error)
     })
-
-  // //Name already in persons
-  // if (persons.find(person => person.name === body.name)) {
-  //   return response.status(400).json({error: 'Name already has number.'})
-  // }
-
-  // const id = generateId()
-  // //Id already in persons
-  // if (persons.find(person => person.id === body.id)) {
-  //   return response.status(400).json({error: 'Id already used.'})
-  // }
-
-  // const person = {
-  //   name: body.name,
-  //   number: body.number,
-  //   id: id
-  // }
-
-  // persons = persons.concat(person)
-
-  // response.json(person)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-  response.status(204).end()
+  Person
+    .findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => {
+      response.status(400).send({ error: 'malformatted id' })
+    })
 })
 
 const PORT = process.env.PORT || 3001
