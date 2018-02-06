@@ -2,6 +2,7 @@
 /node_modules
 
 /mongo.js
+/models/person.js
 
 # testing
 /coverage

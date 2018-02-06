@@ -3,6 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -44,8 +45,15 @@ app.get('/info', (req, res) => {
   )
 })
 
-app.get('/api/persons', (req, res) => {
-  res.json(persons)
+app.get('/api/persons', (request, response) => {
+  Person
+    .find({})
+    .then(persons => {
+      response.json(persons)
+    })
+    .catch(error => {
+      console.log(error)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -70,26 +78,40 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({error: 'Name or number missing.'})
   }
 
-  //Name already in persons
-  if (persons.find(person => person.name === body.name)) {
-    return response.status(400).json({error: 'Name already has number.'})
-  }
-
-  const id = generateId()
-  //Id already in persons
-  if (persons.find(person => person.id === body.id)) {
-    return response.status(400).json({error: 'Id already used.'})
-  }
-
-  const person = {
+  const person = new Person({
     name: body.name,
-    number: body.number,
-    id: id
-  }
+    number: body.number 
+  })
 
-  persons = persons.concat(person)
+  person
+    .save()
+    .then(savedPerson => {
+      response.json(savedPerson)
+    })
+    .catch(error => {
+      console.log(error)
+    })
 
-  response.json(person)
+  // //Name already in persons
+  // if (persons.find(person => person.name === body.name)) {
+  //   return response.status(400).json({error: 'Name already has number.'})
+  // }
+
+  // const id = generateId()
+  // //Id already in persons
+  // if (persons.find(person => person.id === body.id)) {
+  //   return response.status(400).json({error: 'Id already used.'})
+  // }
+
+  // const person = {
+  //   name: body.name,
+  //   number: body.number,
+  //   id: id
+  // }
+
+  // persons = persons.concat(person)
+
+  // response.json(person)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
