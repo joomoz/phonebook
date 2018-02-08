@@ -1,5 +1,9 @@
 const mongoose = require('mongoose')
-var Schema = mongoose.Schema;
+var Schema = mongoose.Schema
+
+if ( process.env.NODE_ENV !== 'production' ) {
+  require('dotenv').config()
+}
 
 const url = process.env.MONGODB_URI
 
