@@ -57,8 +57,6 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  // const id = Number(request.params.id)
-
   Person
     .findById(request.params.id)
     .then(person => {
@@ -102,12 +100,15 @@ app.post('/api/persons', (request, response) => {
 })
 
 app.delete('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+
   Person
-    .findByIdAndRemove(request.params.id)
+    .findByIdAndRemove(id)
     .then(result => {
       response.status(204).end()
     })
     .catch(error => {
+      console.log(error);
       response.status(400).send({ error: 'malformatted id' })
     })
 })
