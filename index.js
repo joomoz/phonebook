@@ -1,9 +1,10 @@
 const express = require('express')
-const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
+
+const app = express()
 
 app.use(cors())
 app.use(bodyParser.json())

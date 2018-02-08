@@ -10,7 +10,7 @@ const url = process.env.MONGODB_URI
 mongoose.connect(url)
 
 const personSchema = new Schema({
-  name: {type: String, unique: true},
+  name: { type: String, unique: true },
   number: String
 })
 
