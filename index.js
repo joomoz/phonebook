@@ -15,44 +15,40 @@ morgan.token('data', (req, res) => {
 
 app.use(morgan(':method :url :data :status :res[content-length] - :response-time ms'))
 
-let persons = [
-  {
-    name: 'Antti Alitalo',
-    number: '050-1234567',
-    id: 1
-  },
-  {
-    name: 'Kalle Jokunen',
-    number: '+358505185698',
-    id: 2
-  },
-  {
-    name: 'Saija Seilaaja',
-    number: '0415698758',
-    id: 3
-  }
-]
+const format = (person) => {
+  const formattedPerson = { ...person._doc, id: person._id }
+  delete formattedPerson._id
+  delete formattedPerson.__v
 
-app.get('/', (req, res) => {
-  res.send('<h1>Phonebook?!</h1>')
+  return formattedPerson
+}
+
+app.get('/', (request, response) => {
+  response.send('<h1>Phonebook?!</h1>')
 })
 
-app.get('/info', (req, res) => {
-  const n = persons.length
-  res.send(`
-    <p>Puhelinluettelossa ${n} henkilön tiedot</p> 
-    <p>${new Date()}</p>`
-  )
+app.get('/info', (request, response) => {
+  Person
+    .find({})
+    .then(persons => {
+      response.send(
+        `<p>Puhelinluettelossa on ${persons.length} henkilön tiedot</p>` 
+      )
+    })
+    .catch(error => {
+      console.log(error)
+    })
 })
 
 app.get('/api/persons', (request, response) => {
   Person
     .find({})
     .then(persons => {
-      response.json(persons)
+      response.json(persons.map(format))
     })
     .catch(error => {
       console.log(error)
+      response.status(400).end()
     })
 })
 
@@ -61,7 +57,7 @@ app.get('/api/persons/:id', (request, response) => {
     .findById(request.params.id)
     .then(person => {
       if(person) {
-        response.json(person)
+        response.json(format(person))
       } else {
         response.status(404).end()
       }
@@ -71,11 +67,6 @@ app.get('/api/persons/:id', (request, response) => {
       response.status(404).end()
     })
 })
-
-const generateId = () => {
-  const newID = Math.floor(Math.random()*100000)
-  return newID
-}
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
